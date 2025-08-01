@@ -384,6 +384,125 @@
             color: white;
         }
 
+        .pricing-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(244, 196, 48, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .pricing-card:hover::before {
+            left: 100%;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            border-color: #F4C430;
+        }
+
+        .pricing-card.featured {
+            background: linear-gradient(135deg, rgba(244, 196, 48, 0.2), rgba(255, 255, 255, 0.15));
+            border-color: #F4C430;
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+
+        .pricing-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .pricing-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #F4C430;
+        }
+
+        .pricing-amount {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .pricing-period {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 25px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 8px 0;
+            font-size: 1rem;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #F4C430;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .pricing-cta {
+            background: linear-gradient(45deg, #F4C430, #E6B800);
+            color: #2C5F7D;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(244, 196, 48, 0.4);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .pricing-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(244, 196, 48, 0.6);
+        }
+
         .pricing-highlight {
             text-align: center;
             margin-bottom: 50px;
@@ -400,6 +519,20 @@
         .rate-description {
             font-size: 1.4rem;
             opacity: 0.9;
+        }
+
+        .pricing-note {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .pricing-note strong {
+            color: #F4C430;
         }
 
         .service-areas {
@@ -600,6 +733,27 @@
                 display: block;
                 margin: 10px auto;
             }
+
+            .pricing-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+
+            .pricing-card.featured:hover {
+                transform: translateY(-10px);
+            }
+
+            .pricing-amount {
+                font-size: 2.8rem;
+            }
+
+            .pricing-title {
+                font-size: 1.3rem;
+            }
         }
 
         .scroll-indicator {
@@ -715,11 +869,53 @@
 
     <section class="pricing section" id="pricing">
         <h2 class="section-title">Affordable Daily Rate</h2>
-        <div class="pricing-highlight">
-            <div class="daily-rate">$35/Day</div>
-            <div class="rate-description">Professional dog sitting services at an affordable rate</div>
+        <p class="section-subtitle">Choose the perfect care plan for your beloved dogs</p>
+        <div class="pricing-container">
+            <div class="pricing-card">
+                <div class="pricing-icon">🐕</div>
+                <h3 class="pricing-title">Basic Plan</h3>
+                <div class="pricing-amount">$25/Day</div>
+                <p class="pricing-period">Per Dog</p>
+                <ul class="pricing-features">
+                    <li>Daily walks and playtime</li>
+                    <li>Basic feeding and hydration</li>
+                    <li>Daily updates via text/email</li>
+                    <li>Flexible scheduling</li>
+                </ul>
+                <a href="#contact" class="pricing-cta">Book Now</a>
+            </div>
+            <div class="pricing-card featured">
+                <div class="pricing-icon">🐕💖</div>
+                <h3 class="pricing-title">Premium Plan</h3>
+                <div class="pricing-amount">$35/Day</div>
+                <p class="pricing-period">Per Dog</p>
+                <ul class="pricing-features">
+                    <li>In-home dog sitting</li>
+                    <li>Medication administration</li>
+                    <li>Overnight care available</li>
+                    <li>Daily photos and updates</li>
+                    <li>Emergency care available</li>
+                </ul>
+                <a href="#contact" class="pricing-cta">Book Now</a>
+            </div>
+            <div class="pricing-card">
+                <div class="pricing-icon">🐕🏆</div>
+                <h3 class="pricing-title">Elite Plan</h3>
+                <div class="pricing-amount">$45/Day</div>
+                <p class="pricing-period">Per Dog</p>
+                <ul class="pricing-features">
+                    <li>Full-time in-home care</li>
+                    <li>Advanced medical care</li>
+                    <li>Extended stays available</li>
+                    <li>24/7 emergency support</li>
+                    <li>Custom care routines</li>
+                </ul>
+                <a href="#contact" class="pricing-cta">Book Now</a>
+            </div>
         </div>
-        <p class="section-subtitle">Quality care that doesn't break the bank. Contact us for custom pricing on extended stays and multiple dogs.</p>
+        <div class="pricing-note">
+            <p><strong>Custom pricing available</strong> for extended stays, multiple dogs, and special care requirements. Contact us for personalized quotes!</p>
+        </div>
     </section>
 
     <section class="service-areas section" id="areas">
