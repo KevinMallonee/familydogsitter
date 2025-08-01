@@ -535,6 +535,122 @@
             color: #F4C430;
         }
 
+        .reviews {
+            background: linear-gradient(135deg, #F8F4E6 0%, #F0E68C 100%);
+        }
+
+        .reviews-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .review-card {
+            background: white;
+            padding: 30px 25px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(44, 95, 125, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            border: 2px solid rgba(44, 95, 125, 0.1);
+        }
+
+        .review-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 60px rgba(44, 95, 125, 0.25);
+            border-color: #F4C430;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .reviewer-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #2C5F7D, #4A9B8E);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+
+        .reviewer-info {
+            flex: 1;
+        }
+
+        .reviewer-name {
+            font-weight: 700;
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .review-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .review-stars {
+            color: #F4C430;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .review-text {
+            color: #555;
+            line-height: 1.7;
+            font-size: 1rem;
+            font-style: italic;
+        }
+
+        .review-service {
+            background: rgba(44, 95, 125, 0.1);
+            color: #2C5F7D;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .reviews-summary {
+            text-align: center;
+            margin-bottom: 50px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(244, 196, 48, 0.3);
+        }
+
+        .reviews-summary h3 {
+            color: #2C5F7D;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .reviews-summary .stars {
+            color: #F4C430;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .reviews-summary .rating-text {
+            font-size: 1.2rem;
+            color: #555;
+            font-weight: 600;
+        }
+
         .service-areas {
             background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
         }
@@ -796,6 +912,8 @@
                 <li><a href="#home">Home</a></li>
                 <li><a href="#services">Services</a></li>
                 <li><a href="#about">About</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#reviews">Reviews</a></li>
                 <li><a href="#areas">Service Areas</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
@@ -915,6 +1033,162 @@
         </div>
         <div class="pricing-note">
             <p><strong>Custom pricing available</strong> for extended stays, multiple dogs, and special care requirements. Contact us for personalized quotes!</p>
+        </div>
+    </section>
+
+    <section class="reviews section" id="reviews">
+        <h2 class="section-title">What Our Clients Say</h2>
+        <p class="section-subtitle">Read reviews from pet parents who booked with Kevin M.</p>
+        
+        <div class="reviews-summary">
+            <h3>Rover Reviews</h3>
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <p class="rating-text">5.0 out of 5.0 stars based on 50+ reviews</p>
+        </div>
+        
+        <div class="reviews-container">
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">N</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">Nathan A.</div>
+                        <div class="review-date">Jul 8, 2023</div>
+                    </div>
+                </div>
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"Kevin provided me with pictures throughout the stay and kept me updated with how my pup was doing, I was reassured that my pup was well taken care of and most of all was having fun. Thank you Kevin!!"</p>
+                <div class="review-service">Dog Boarding</div>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">P</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">Petra P.</div>
+                        <div class="review-date">Dec 2, 2023</div>
+                    </div>
+                </div>
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"Kevin is always great with our dog Riley. His availability is wonderful and response time is quick. Most importantly Riley always has fun and enjoys being with Kevin!"</p>
+                <div class="review-service">Dog Boarding</div>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">L</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">Laura B.</div>
+                        <div class="review-date">Sep 13, 2023</div>
+                    </div>
+                </div>
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"Dogs are happy and tired what more could you ask for."</p>
+                <div class="review-service">Dog Boarding</div>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">G</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">Geoff B.</div>
+                        <div class="review-date">Dec 27, 2023</div>
+                    </div>
+                </div>
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"We were able to book for Christmas eve at the last minute. Close and great rate."</p>
+                <div class="review-service">Dog Boarding</div>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">L</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">Lorene W.</div>
+                        <div class="review-date">Dec 24, 2023</div>
+                    </div>
+                </div>
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"Thank you Kevin for taking care of Ru. She knows your family now and we appreciate you treating her well. We'll be back soon!"</p>
+                <div class="review-service">Dog Boarding</div>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">V</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">Viv C.</div>
+                        <div class="review-date">Oct 4, 2023</div>
+                    </div>
+                </div>
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"Perfect Stay! Thanks again Kevin. Always a reliable and awesome sitter."</p>
+                <div class="review-service">Dog Boarding</div>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">A</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">Angeleena P.</div>
+                        <div class="review-date">Sep 6, 2023</div>
+                    </div>
+                </div>
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"We use Kevin all the time to watch our wiener dog. He is always very communicative, sending pictures and updates. Lucy loves hanging out at his house with the other dog friends that are visiting. He is our number one choice on Rover whenever we need a pet sitter. :)"</p>
+                <div class="review-service">Dog Boarding</div>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">D</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">Desiree G.</div>
+                        <div class="review-date">Aug 29, 2023</div>
+                    </div>
+                </div>
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"My dog Taz has been to Kevin's place several times now. He tends to be an anxious dog, however he always seems eager to be dropped off, and happy and calm when I pick him up. I feel confident that he is being well cared for when he is there."</p>
+                <div class="review-service">Dog Boarding</div>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">C</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">Charlotte N.</div>
+                        <div class="review-date">Aug 10, 2023</div>
+                    </div>
+                </div>
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"Repeat client. Kevin has watched our dog for the past 5 years and is reliable and is great with taking care of her. He has good availability and stays in contact with us on the status of our dog. Thanks and will be back."</p>
+                <div class="review-service">Dog Boarding</div>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">M</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">Michael P.</div>
+                        <div class="review-date">Jun 16, 2023</div>
+                    </div>
+                </div>
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"We left our border collie for the weekend with Kevin. He clearly had a great time because he was so tired when we picked him up. Kevin sent us pictures and updated us that Ace was well taken care of. Thank you!"</p>
+                <div class="review-service">Dog Boarding</div>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">J</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">Jordan P.</div>
+                        <div class="review-date">Jun 15, 2023</div>
+                    </div>
+                </div>
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"I booked Kevin for doggy day care for my two dogs while I was out of town. Our meet and greet prior to booking went well. My dogs were very excited to explore in Kevin's yard while he and I spoke. They also were comfortable enough to eventually come up and greet him. My dogs can sometimes be shy with men, but they didn't seem bothered which made me feel assured that things would go fine during their stay. Kevin sent lots of photos of my dogs and it definitely looked like they had a nice time with him. When I picked up my dogs, I could tell they had a great day and were both asleep shortly after I got them home. I would definitely book with Kevin again."</p>
+                <div class="review-service">Doggy Day Care</div>
+            </div>
         </div>
     </section>
 
