@@ -51,13 +51,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check for booking conflicts
+    // Check for booking conflicts using proper date range overlap logic
     const { data: conflicts, error: conflictError } = await supabaseAdmin
       .from('bookings')
       .select('*')
       .eq('service_id', serviceId)
-      .overlaps('start_time', startTime, 'end_time', endTime)
-      .neq('status', 'cancelled');
+      .neq('status', 'cancelled')
+      .or(`start_time.lte.${endTime},end_time.gte.${startTime}`);
 
     if (conflictError) {
       console.error('Error checking conflicts:', conflictError);
