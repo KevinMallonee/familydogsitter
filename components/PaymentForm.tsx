@@ -118,7 +118,7 @@ function PaymentFormContent({
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Card Information
           </label>
-          <div className="border-2 border-gray-300 rounded-xl p-4 min-h-[60px]">
+          <div className="border-2 border-gray-300 rounded-xl p-4 min-h-[60px] bg-white">
             <CardElement
               options={{
                 style: {
@@ -128,12 +128,14 @@ function PaymentFormContent({
                     '::placeholder': {
                       color: '#aab7c4',
                     },
+                    iconColor: '#c7f0d8',
                   },
                   invalid: {
                     color: '#9e2146',
                   },
                 },
                 hidePostalCode: true,
+                iconStyle: 'solid',
               }}
             />
           </div>

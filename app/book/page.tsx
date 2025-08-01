@@ -3,16 +3,24 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Service } from '@/types';
-import BookingCalendar from '@/components/BookingCalendar';
 import BookingForm from '@/components/BookingForm';
 import Link from 'next/link';
+import StripeTest from '@/components/StripeTest';
+import { useRouter } from 'next/navigation';
 
 export default function BookPage() {
   const [services, setServices] = useState<Service[]>([]);
-  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  const router = useRouter();
+
+  const handlePaymentSuccess = () => {
+    // Redirect to confirmation page or show success message
+    router.push('/book/confirmation');
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -69,10 +77,6 @@ export default function BookPage() {
       }
     };
 
-    checkAuth();
-  }, []);
-
-  useEffect(() => {
     const fetchServices = async () => {
       try {
         const { data, error } = await supabase
@@ -92,6 +96,7 @@ export default function BookPage() {
       }
     };
 
+    checkAuth();
     fetchServices();
   }, []);
 
@@ -172,8 +177,32 @@ export default function BookPage() {
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">
               Calendar & Availability
             </h2>
-            <BookingCalendar />
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <p className="text-gray-600">Calendar view coming soon...</p>
+            </div>
           </div>
+        </div>
+
+        {/* Payment Form */}
+        {/* showPaymentForm && bookingId && totalAmount && ( */}
+        {/*   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"> */}
+        {/*     <div className="max-w-md w-full"> */}
+        {/*       <PaymentForm */}
+        {/*         bookingId={bookingId} */}
+        {/*         amount={totalAmount} */}
+        {/*         isGuestBooking={!isAuthenticated} */}
+        {/*         guestInfo={guestInfo} */}
+        {/*         serviceId={selectedService?.id ? parseInt(selectedService.id.toString()) : undefined} */}
+        {/*         onSuccess={handlePaymentSuccess} */}
+        {/*         onCancel={() => setShowPaymentForm(false)} */}
+        {/*       /> */}
+        {/*     </div> */}
+        {/*   </div> */}
+        {/* ) */}
+
+        {/* Temporary Stripe Test */}
+        <div className="mt-8">
+          <StripeTest />
         </div>
       </div>
     </div>
