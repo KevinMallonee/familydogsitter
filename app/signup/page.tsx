@@ -25,7 +25,7 @@ export default function SignupPage() {
     setShowEmailConfirmation(false);
 
     try {
-      const response = await fetch('/api/auth/signup', {
+      const response = await fetch('/api/auth/simple-signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,8 +40,10 @@ export default function SignupPage() {
         return;
       }
 
-      setSuccess(data.message || 'Account created successfully!');
-      setShowEmailConfirmation(true);
+      setSuccess('Account created successfully! You can now log in.');
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
 
     } catch (error) {
       setError('Network error. Please try again.');

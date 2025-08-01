@@ -13,12 +13,21 @@ export async function POST(request: NextRequest) {
 
     console.log('Creating simple user account:', { email, name, phone });
 
-    // Generate a UUID for the user
-    const userId = crypto.randomUUID();
+    // Check if user already exists
+    const { data: existingUser, error: checkError } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (existingUser) {
+      return NextResponse.json({ 
+        error: 'User with this email already exists' 
+      }, { status: 409 });
+    }
 
     // Create user record directly in our users table
     const userData = {
-      id: userId,
       email: email,
       full_name: name,
       phone: phone || null
@@ -44,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     // Create a simple session token (in production, you'd want proper JWT)
     const sessionData = {
-      user_id: userId,
+      user_id: dbUser.id,
       email: email,
       full_name: name,
       phone: phone,
