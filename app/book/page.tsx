@@ -5,20 +5,45 @@ import { supabase } from '@/lib/supabase';
 import { Service } from '@/types';
 import BookingCalendar from '@/components/BookingCalendar';
 import BookingForm from '@/components/BookingForm';
+import Link from 'next/link';
 
 export default function BookPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // First check if user is logged in via localStorage (authenticated user)
+        const storedUser = localStorage.getItem('user');
+        const storedSession = localStorage.getItem('session');
+        
+        if (storedUser && storedSession) {
+          const userData = JSON.parse(storedUser);
+          const sessionData = JSON.parse(storedSession);
+          
+          // Check if session is still valid
+          if (sessionData.expires_at && new Date(sessionData.expires_at * 1000) > new Date()) {
+            setUser(userData);
+            setIsAuthenticated(true);
+            setLoading(false);
+            return;
+          } else {
+            // Session expired, clear localStorage
+            localStorage.removeItem('user');
+            localStorage.removeItem('session');
+          }
+        }
+
+        // Check Supabase auth
         const { data: { user } } = await supabase.auth.getUser();
         
         if (user) {
           setUser(user);
+          setIsAuthenticated(true);
         } else {
           // Create anonymous user for guest bookings
           const { data: { user: anonymousUser }, error } = await supabase.auth.signInAnonymously();
@@ -27,6 +52,7 @@ export default function BookPage() {
             setError('Failed to create guest session');
           } else if (anonymousUser) {
             setUser(anonymousUser);
+            setIsAuthenticated(false);
           }
         }
       } catch (error) {
@@ -98,28 +124,48 @@ export default function BookPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Book Your Dog's Stay
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Choose your preferred service and dates for your furry friend's care
+          <p className="text-xl text-gray-600 mb-6">
+            Choose your preferred service and schedule
           </p>
+          
+          {!isAuthenticated && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 max-w-2xl mx-auto">
+              <p className="text-blue-800 mb-2">
+                <strong>Guest Booking:</strong> You're booking as a guest. 
+              </p>
+              <p className="text-blue-700 text-sm mb-3">
+                Create an account to save your information and view your booking history.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                <Link 
+                  href="/signup" 
+                  className="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-md hover:bg-primary-700 transition-colors"
+                >
+                  Create Account
+                </Link>
+                <Link 
+                  href="/login" 
+                  className="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition-colors"
+                >
+                  Sign In
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
 
-        {!user.email && (
-          <div className="mt-4 p-4 bg-blue-50 rounded-xl max-w-2xl mx-auto">
-            <p className="text-blue-800">
-              💡 <strong>Guest Booking:</strong> You can book without creating an account. 
-              We'll collect your contact information during the booking process.
-            </p>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+        <div className="grid lg:grid-cols-2 gap-8">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Available Services</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              Available Services
+            </h2>
             <BookingForm services={services} user={user} />
           </div>
           
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Calendar View</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              Calendar & Availability
+            </h2>
             <BookingCalendar />
           </div>
         </div>
