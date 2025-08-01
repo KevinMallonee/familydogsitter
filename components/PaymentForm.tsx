@@ -118,7 +118,7 @@ function PaymentFormContent({
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Card Information
           </label>
-          <div className="border-2 border-gray-300 rounded-xl p-4">
+          <div className="border-2 border-gray-300 rounded-xl p-4 min-h-[60px]">
             <CardElement
               options={{
                 style: {
@@ -133,9 +133,13 @@ function PaymentFormContent({
                     color: '#9e2146',
                   },
                 },
+                hidePostalCode: true,
               }}
             />
           </div>
+          <p className="text-sm text-gray-500 mt-2">
+            Enter your credit card number, expiry date, and CVC
+          </p>
         </div>
 
         {error && (

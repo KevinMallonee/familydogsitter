@@ -8,7 +8,8 @@ export async function POST() {
     const testProduct = {
       name: 'Test Product',
       description: 'A test product for $1',
-      price: 1.00
+      price: 1.00,
+      stripe_product_id: 'prod_Sn1Z8SCciLOags'
     };
 
     console.log('Test product data:', testProduct);

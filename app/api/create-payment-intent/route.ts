@@ -19,7 +19,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('Creating payment intent:', { bookingId, amount, isGuestBooking, guestInfo });
+    console.log('Creating payment intent:', { bookingId, amount, isGuestBooking, guestInfo, serviceId });
+
+    // Get service information including Stripe product ID
+    const { data: service, error: serviceError } = await supabaseAdmin
+      .from('services')
+      .select('*')
+      .eq('id', serviceId)
+      .single();
+
+    if (serviceError || !service) {
+      console.error('Error fetching service:', serviceError);
+      return NextResponse.json(
+        { error: 'Service not found' },
+        { status: 404 }
+      );
+    }
+
+    console.log('Service found:', service);
 
     // Create user data based on booking type
     let user = null;
@@ -75,8 +92,8 @@ export async function POST(request: NextRequest) {
       customerId = customer.id;
     }
 
-    // Create PaymentIntent
-    const paymentIntent = await stripe.paymentIntents.create({
+    // Create PaymentIntent with product information
+    const paymentIntentData: any = {
       amount: Math.round(amount * 100), // Convert to cents
       currency: 'usd',
       customer: customerId,
@@ -89,7 +106,14 @@ export async function POST(request: NextRequest) {
         guestEmail: guestInfo?.email || '',
         guestPhone: guestInfo?.phone || ''
       },
-    });
+    };
+
+    // Add product ID if available
+    if (service.stripe_product_id) {
+      paymentIntentData.metadata.productId = service.stripe_product_id;
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create(paymentIntentData);
 
     console.log('Payment intent created successfully:', paymentIntent.id);
 
