@@ -386,9 +386,12 @@
 
         .pricing-container {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 30px;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
             margin-top: 60px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .pricing-card {
@@ -870,6 +873,29 @@
             .pricing-title {
                 font-size: 1.3rem;
             }
+
+            .reviews-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .review-card {
+                padding: 25px 20px;
+            }
+
+            .reviewer-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .reviewer-name {
+                font-size: 1rem;
+            }
+
+            .review-text {
+                font-size: 0.95rem;
+            }
         }
 
         .scroll-indicator {
@@ -986,47 +1012,37 @@
     </section>
 
     <section class="pricing section" id="pricing">
-        <h2 class="section-title">Affordable Daily Rate</h2>
-        <p class="section-subtitle">Choose the perfect care plan for your beloved dogs</p>
+        <h2 class="section-title">Our Dog Care Services</h2>
+        <p class="section-subtitle">Choose the perfect care option for your beloved dogs</p>
         <div class="pricing-container">
             <div class="pricing-card">
-                <div class="pricing-icon">🐕</div>
-                <h3 class="pricing-title">Basic Plan</h3>
-                <div class="pricing-amount">$25/Day</div>
+                <div class="pricing-icon">🏠</div>
+                <h3 class="pricing-title">Daily Pet Sitting</h3>
+                <div class="pricing-amount">$35/Day</div>
                 <p class="pricing-period">Per Dog</p>
                 <ul class="pricing-features">
-                    <li>Daily walks and playtime</li>
-                    <li>Basic feeding and hydration</li>
-                    <li>Daily updates via text/email</li>
+                    <li>In-home pet sitting visits</li>
+                    <li>Daily feeding and hydration</li>
+                    <li>Exercise and playtime</li>
+                    <li>Medication administration</li>
+                    <li>Daily updates with photos</li>
                     <li>Flexible scheduling</li>
                 </ul>
                 <a href="#contact" class="pricing-cta">Book Now</a>
             </div>
             <div class="pricing-card featured">
-                <div class="pricing-icon">🐕💖</div>
-                <h3 class="pricing-title">Premium Plan</h3>
-                <div class="pricing-amount">$35/Day</div>
+                <div class="pricing-icon">🌙</div>
+                <h3 class="pricing-title">Overnight Boarding</h3>
+                <div class="pricing-amount">$40/Day</div>
                 <p class="pricing-period">Per Dog</p>
                 <ul class="pricing-features">
-                    <li>In-home dog sitting</li>
+                    <li>Full overnight care</li>
+                    <li>24/7 supervision</li>
+                    <li>Comfortable home environment</li>
+                    <li>Regular feeding and walks</li>
                     <li>Medication administration</li>
-                    <li>Overnight care available</li>
                     <li>Daily photos and updates</li>
                     <li>Emergency care available</li>
-                </ul>
-                <a href="#contact" class="pricing-cta">Book Now</a>
-            </div>
-            <div class="pricing-card">
-                <div class="pricing-icon">🐕🏆</div>
-                <h3 class="pricing-title">Elite Plan</h3>
-                <div class="pricing-amount">$45/Day</div>
-                <p class="pricing-period">Per Dog</p>
-                <ul class="pricing-features">
-                    <li>Full-time in-home care</li>
-                    <li>Advanced medical care</li>
-                    <li>Extended stays available</li>
-                    <li>24/7 emergency support</li>
-                    <li>Custom care routines</li>
                 </ul>
                 <a href="#contact" class="pricing-cta">Book Now</a>
             </div>
