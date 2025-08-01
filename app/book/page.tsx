@@ -17,11 +17,16 @@ export default function BookPage() {
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push('/login');
-        return;
+      if (user) {
+        setUser(user);
+      } else {
+        // Create a guest user object for guest bookings
+        setUser({
+          id: `guest_${Date.now()}`,
+          email: null,
+          user_metadata: { name: 'Guest User' }
+        });
       }
-      setUser(user);
     };
 
     const fetchData = async () => {
@@ -59,10 +64,6 @@ export default function BookPage() {
     );
   }
 
-  if (!user) {
-    return null;
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -73,6 +74,14 @@ export default function BookPage() {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Choose your preferred service and schedule your dog's care
           </p>
+          {!user.email && (
+            <div className="mt-4 p-4 bg-blue-50 rounded-xl max-w-2xl mx-auto">
+              <p className="text-blue-800">
+                💡 <strong>Guest Booking:</strong> You can book without creating an account. 
+                We'll collect your contact information during the booking process.
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">

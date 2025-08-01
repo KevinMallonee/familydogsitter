@@ -14,7 +14,9 @@ export interface Database {
           id: string
           email: string
           name: string | null
+          phone: string | null
           stripe_customer_id: string | null
+          is_guest: boolean | null
           created_at: string
           updated_at: string
         }
@@ -22,7 +24,9 @@ export interface Database {
           id?: string
           email: string
           name?: string | null
+          phone?: string | null
           stripe_customer_id?: string | null
+          is_guest?: boolean | null
           created_at?: string
           updated_at?: string
         }
@@ -30,7 +34,9 @@ export interface Database {
           id?: string
           email?: string
           name?: string | null
+          phone?: string | null
           stripe_customer_id?: string | null
+          is_guest?: boolean | null
           created_at?: string
           updated_at?: string
         }

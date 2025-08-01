@@ -2,9 +2,17 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  phone?: string;
   stripe_customer_id?: string;
+  is_guest?: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export interface GuestInfo {
+  name: string;
+  email: string;
+  phone: string;
 }
 
 export interface Service {
@@ -56,6 +64,7 @@ export interface BookingFormData {
   start_time: string;
   end_time: string;
   notes?: string;
+  guestInfo?: GuestInfo;
 }
 
 export interface ContactFormData {

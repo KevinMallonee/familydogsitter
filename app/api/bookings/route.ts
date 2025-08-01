@@ -42,11 +42,47 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { serviceId, startTime, endTime, notes, userId, totalAmount } = await request.json();
+    const { serviceId, startTime, endTime, notes, userId, totalAmount, guestInfo } = await request.json();
 
-    if (!serviceId || !startTime || !endTime || !userId || !totalAmount) {
+    if (!serviceId || !startTime || !endTime || !totalAmount) {
       return NextResponse.json(
         { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    let finalUserId = userId;
+
+    // If this is a guest booking, create a guest user record
+    if (guestInfo && guestInfo.name && guestInfo.email) {
+      const { data: guestUser, error: guestError } = await supabaseAdmin
+        .from('users')
+        .insert([
+          {
+            id: `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            email: guestInfo.email,
+            name: guestInfo.name,
+            phone: guestInfo.phone || null,
+            is_guest: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }
+        ])
+        .select()
+        .single();
+
+      if (guestError) {
+        console.error('Error creating guest user:', guestError);
+        return NextResponse.json(
+          { error: 'Failed to create guest user' },
+          { status: 500 }
+        );
+      }
+
+      finalUserId = guestUser.id;
+    } else if (!userId) {
+      return NextResponse.json(
+        { error: 'User ID or guest information is required' },
         { status: 400 }
       );
     }
@@ -79,7 +115,7 @@ export async function POST(request: NextRequest) {
       .from('bookings')
       .insert([
         {
-          user_id: userId,
+          user_id: finalUserId,
           service_id: serviceId,
           start_time: startTime,
           end_time: endTime,

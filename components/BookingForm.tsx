@@ -16,10 +16,15 @@ export default function BookingForm({ services, user }: BookingFormProps) {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [notes, setNotes] = useState('');
+  const [guestName, setGuestName] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
+  const [guestPhone, setGuestPhone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [bookingId, setBookingId] = useState<string | null>(null);
   const router = useRouter();
+
+  const isGuest = !user.email;
 
   const handleServiceSelect = (service: Service) => {
     setSelectedService(service);
@@ -44,6 +49,12 @@ export default function BookingForm({ services, user }: BookingFormProps) {
       return;
     }
 
+    // Validate guest information if guest booking
+    if (isGuest && (!guestName || !guestEmail || !guestPhone)) {
+      alert('Please fill in all contact information');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -60,6 +71,11 @@ export default function BookingForm({ services, user }: BookingFormProps) {
           notes,
           userId: user.id,
           totalAmount: calculateTotal(),
+          guestInfo: isGuest ? {
+            name: guestName,
+            email: guestEmail,
+            phone: guestPhone
+          } : null,
         }),
       });
 
@@ -93,6 +109,54 @@ export default function BookingForm({ services, user }: BookingFormProps) {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6">
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Guest Information */}
+        {isGuest && (
+          <div className="bg-blue-50 p-4 rounded-xl mb-6">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">Contact Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="guestName" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Full Name *
+                </label>
+                <input
+                  type="text"
+                  id="guestName"
+                  value={guestName}
+                  onChange={(e) => setGuestName(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
+                />
+              </div>
+              <div>
+                <label htmlFor="guestEmail" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Email Address *
+                </label>
+                <input
+                  type="email"
+                  id="guestEmail"
+                  value={guestEmail}
+                  onChange={(e) => setGuestEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label htmlFor="guestPhone" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  id="guestPhone"
+                  value={guestPhone}
+                  onChange={(e) => setGuestPhone(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Service Selection */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -184,7 +248,7 @@ export default function BookingForm({ services, user }: BookingFormProps) {
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={isSubmitting || !selectedService || !startTime || !endTime}
+          disabled={isSubmitting || !selectedService || !startTime || !endTime || (isGuest && (!guestName || !guestEmail || !guestPhone))}
           className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white py-4 px-8 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Creating Booking...' : 'Continue to Payment'}

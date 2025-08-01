@@ -4,23 +4,34 @@ import { supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
-    const { serviceId, userId, amount } = await request.json();
+    const { bookingId, amount } = await request.json();
 
-    if (!serviceId || !userId || !amount) {
+    if (!bookingId || !amount) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // Get user from Supabase
-    const { data: user, error: userError } = await supabaseAdmin
-      .from('users')
-      .select('*')
-      .eq('id', userId)
+    // Get booking and user information
+    const { data: booking, error: bookingError } = await supabaseAdmin
+      .from('bookings')
+      .select(`
+        *,
+        user:users(*)
+      `)
+      .eq('id', bookingId)
       .single();
 
-    if (userError || !user) {
+    if (bookingError || !booking) {
+      return NextResponse.json(
+        { error: 'Booking not found' },
+        { status: 404 }
+      );
+    }
+
+    const user = booking.user;
+    if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
@@ -34,13 +45,14 @@ export async function POST(request: NextRequest) {
       const customer = await stripe.customers.create({
         email: user.email,
         name: user.name || undefined,
+        phone: user.phone || undefined,
       });
 
       // Update user with Stripe customer ID
       await supabaseAdmin
         .from('users')
         .update({ stripe_customer_id: customer.id })
-        .eq('id', userId);
+        .eq('id', user.id);
 
       customerId = customer.id;
     }
@@ -51,8 +63,9 @@ export async function POST(request: NextRequest) {
       currency: 'usd',
       customer: customerId,
       metadata: {
-        serviceId,
-        userId,
+        bookingId,
+        userId: user.id,
+        serviceId: booking.service_id,
       },
     });
 
