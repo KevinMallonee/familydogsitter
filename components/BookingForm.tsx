@@ -121,6 +121,7 @@ export default function BookingForm({ services, user }: BookingFormProps) {
       <PaymentForm
         bookingId={bookingId}
         amount={calculateTotal()}
+        isGuestBooking={isGuest}
         onSuccess={() => router.push('/book/confirmation')}
         onCancel={() => setShowPayment(false)}
       />

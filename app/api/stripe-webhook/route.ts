@@ -28,6 +28,8 @@ export async function POST(request: NextRequest) {
 
   try {
     const paymentIntent = event.data.object as Stripe.PaymentIntent;
+    const isGuestBooking = paymentIntent.metadata.isGuestBooking === 'true';
+    const bookingId = paymentIntent.metadata.bookingId;
     
     switch (event.type) {
       case 'payment_intent.created':
@@ -61,11 +63,18 @@ export async function POST(request: NextRequest) {
           .update({ status: 'succeeded' })
           .eq('stripe_payment_intent_id', paymentIntent.id);
         
-        // Also update booking status to confirmed
-        await supabaseAdmin
-          .from('bookings')
-          .update({ status: 'confirmed' })
-          .eq('id', paymentIntent.metadata.bookingId);
+        // Update booking status to confirmed
+        if (isGuestBooking) {
+          await supabaseAdmin
+            .from('guest_bookings')
+            .update({ status: 'confirmed' })
+            .eq('id', bookingId);
+        } else {
+          await supabaseAdmin
+            .from('bookings')
+            .update({ status: 'confirmed' })
+            .eq('id', bookingId);
+        }
         break;
 
       case 'payment_intent.partially_funded':
@@ -85,11 +94,18 @@ export async function POST(request: NextRequest) {
           .update({ status: 'failed' })
           .eq('stripe_payment_intent_id', paymentIntent.id);
         
-        // Also update booking status to pending (allow retry)
-        await supabaseAdmin
-          .from('bookings')
-          .update({ status: 'pending' })
-          .eq('id', paymentIntent.metadata.bookingId);
+        // Update booking status to pending (allow retry)
+        if (isGuestBooking) {
+          await supabaseAdmin
+            .from('guest_bookings')
+            .update({ status: 'pending' })
+            .eq('id', bookingId);
+        } else {
+          await supabaseAdmin
+            .from('bookings')
+            .update({ status: 'pending' })
+            .eq('id', bookingId);
+        }
         break;
 
       case 'payment_intent.canceled':
@@ -100,11 +116,18 @@ export async function POST(request: NextRequest) {
           .update({ status: 'cancelled' })
           .eq('stripe_payment_intent_id', paymentIntent.id);
         
-        // Also update booking status to cancelled
-        await supabaseAdmin
-          .from('bookings')
-          .update({ status: 'cancelled' })
-          .eq('id', paymentIntent.metadata.bookingId);
+        // Update booking status to cancelled
+        if (isGuestBooking) {
+          await supabaseAdmin
+            .from('guest_bookings')
+            .update({ status: 'cancelled' })
+            .eq('id', bookingId);
+        } else {
+          await supabaseAdmin
+            .from('bookings')
+            .update({ status: 'cancelled' })
+            .eq('id', bookingId);
+        }
         break;
 
       default:
@@ -113,7 +136,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error('Error processing webhook:', error);
+    console.error('Webhook error:', error);
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }

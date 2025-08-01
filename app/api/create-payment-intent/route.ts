@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
-    const { bookingId, amount } = await request.json();
+    const { bookingId, amount, isGuestBooking = false } = await request.json();
 
     if (!bookingId || !amount) {
       return NextResponse.json(
@@ -13,29 +13,61 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get booking and user information
-    const { data: booking, error: bookingError } = await supabaseAdmin
-      .from('bookings')
-      .select(`
-        *,
-        user:users(*)
-      `)
-      .eq('id', bookingId)
-      .single();
+    let booking;
+    let user = null;
 
-    if (bookingError || !booking) {
-      return NextResponse.json(
-        { error: 'Booking not found' },
-        { status: 404 }
-      );
-    }
+    if (isGuestBooking) {
+      // Handle guest booking
+      const { data: guestBooking, error: guestBookingError } = await supabaseAdmin
+        .from('guest_bookings')
+        .select('*')
+        .eq('id', bookingId)
+        .single();
 
-    const user = booking.user;
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      if (guestBookingError || !guestBooking) {
+        return NextResponse.json(
+          { error: 'Guest booking not found' },
+          { status: 404 }
+        );
+      }
+
+      booking = guestBooking;
+      
+      // Create a temporary user object for guest bookings
+      user = {
+        id: `guest-${bookingId}`,
+        email: guestBooking.guest_email,
+        name: guestBooking.guest_name,
+        phone: guestBooking.guest_phone,
+        stripe_customer_id: null
+      };
+    } else {
+      // Handle regular booking
+      const { data: regularBooking, error: bookingError } = await supabaseAdmin
+        .from('bookings')
+        .select(`
+          *,
+          user:users(*)
+        `)
+        .eq('id', bookingId)
+        .single();
+
+      if (bookingError || !regularBooking) {
+        return NextResponse.json(
+          { error: 'Booking not found' },
+          { status: 404 }
+        );
+      }
+
+      booking = regularBooking;
+      user = booking.user;
+      
+      if (!user) {
+        return NextResponse.json(
+          { error: 'User not found' },
+          { status: 404 }
+        );
+      }
     }
 
     let customerId = user.stripe_customer_id;
@@ -48,11 +80,13 @@ export async function POST(request: NextRequest) {
         phone: user.phone || undefined,
       });
 
-      // Update user with Stripe customer ID
-      await supabaseAdmin
-        .from('users')
-        .update({ stripe_customer_id: customer.id })
-        .eq('id', user.id);
+      // Update user with Stripe customer ID (only for regular users)
+      if (!isGuestBooking) {
+        await supabaseAdmin
+          .from('users')
+          .update({ stripe_customer_id: customer.id })
+          .eq('id', user.id);
+      }
 
       customerId = customer.id;
     }
@@ -66,6 +100,7 @@ export async function POST(request: NextRequest) {
         bookingId,
         userId: user.id,
         serviceId: booking.service_id,
+        isGuestBooking: isGuestBooking.toString(),
       },
     });
 

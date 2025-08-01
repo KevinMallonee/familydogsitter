@@ -11,11 +11,12 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 interface PaymentFormProps {
   bookingId: string;
   amount: number;
+  isGuestBooking?: boolean;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-function PaymentFormContent({ bookingId, amount, onSuccess, onCancel }: PaymentFormProps) {
+function PaymentFormContent({ bookingId, amount, isGuestBooking = false, onSuccess, onCancel }: PaymentFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,11 +35,13 @@ function PaymentFormContent({ bookingId, amount, onSuccess, onCancel }: PaymentF
         body: JSON.stringify({
           bookingId,
           amount,
+          isGuestBooking,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create payment intent');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create payment intent');
       }
 
       const { clientSecret } = await response.json();
@@ -63,7 +66,7 @@ function PaymentFormContent({ bookingId, amount, onSuccess, onCancel }: PaymentF
       }
     } catch (error) {
       console.error('Payment error:', error);
-      setError('Payment failed. Please try again.');
+      setError(error instanceof Error ? error.message : 'Payment failed. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -103,25 +106,25 @@ function PaymentFormContent({ bookingId, amount, onSuccess, onCancel }: PaymentF
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
             {error}
           </div>
         )}
 
-        <div className="flex space-x-4">
+        <div className="flex gap-4">
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-xl font-semibold hover:bg-gray-300 transition-colors duration-200"
+            className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all duration-200"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isProcessing}
-            className="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
-            {isProcessing ? 'Processing...' : `Pay ${formatPrice(amount)}`}
+            {isProcessing ? 'Processing...' : 'Pay Now'}
           </button>
         </div>
       </form>
