@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+  
+  body {
+    @apply font-sans text-gray-900 overflow-x-hidden;
+  }
+}
+
+@layer components {
+  .floating-shapes {
+    @apply fixed inset-0 pointer-events-none -z-10;
+  }
+  
+  .shape {
+    @apply absolute rounded-full bg-gradient-to-br from-primary-100/20 to-secondary-100/20 animate-float-shapes;
+  }
+  
+  .shape:nth-child(1) {
+    @apply w-32 h-32 top-[15%] left-[8%] animate-delay-0;
+  }
+  
+  .shape:nth-child(2) {
+    @apply w-20 h-20 top-[65%] right-[15%] animate-delay-[-8s];
+  }
+  
+  .shape:nth-child(3) {
+    @apply w-24 h-24 bottom-[25%] left-[25%] animate-delay-[-15s];
+  }
+}
+
+@layer utilities {
+  .animate-delay-0 {
+    animation-delay: 0s;
+  }
+  
+  .animate-delay-\[-8s\] {
+    animation-delay: -8s;
+  }
+  
+  .animate-delay-\[-15s\] {
+    animation-delay: -15s;
+  }
+} 
