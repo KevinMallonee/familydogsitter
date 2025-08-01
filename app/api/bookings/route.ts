@@ -44,6 +44,8 @@ export async function POST(request: NextRequest) {
   try {
     const { serviceId, startTime, endTime, notes, userId, totalAmount, guestInfo } = await request.json();
 
+    console.log('Booking request:', { serviceId, startTime, endTime, totalAmount, guestInfo });
+
     if (!serviceId || !startTime || !endTime || !totalAmount) {
       return NextResponse.json(
         { error: 'Missing required fields' },
@@ -55,30 +57,38 @@ export async function POST(request: NextRequest) {
 
     // If this is a guest booking, create a guest user record
     if (guestInfo && guestInfo.name && guestInfo.email) {
+      console.log('Creating guest user:', guestInfo);
+      
+      const guestUserData = {
+        email: guestInfo.email,
+        name: guestInfo.name,
+        phone: guestInfo.phone || null,
+        is_guest: true,
+      };
+
+      console.log('Guest user data to insert:', guestUserData);
+
       const { data: guestUser, error: guestError } = await supabaseAdmin
         .from('users')
-        .insert([
-          {
-            id: `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            email: guestInfo.email,
-            name: guestInfo.name,
-            phone: guestInfo.phone || null,
-            is_guest: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          }
-        ])
+        .insert([guestUserData])
         .select()
         .single();
 
       if (guestError) {
         console.error('Error creating guest user:', guestError);
+        console.error('Guest user data that failed:', guestUserData);
         return NextResponse.json(
-          { error: 'Failed to create guest user' },
+          { 
+            error: 'Failed to create guest user', 
+            details: guestError.message,
+            code: guestError.code,
+            hint: guestError.hint
+          },
           { status: 500 }
         );
       }
 
+      console.log('Guest user created successfully:', guestUser);
       finalUserId = guestUser.id;
     } else if (!userId) {
       return NextResponse.json(
@@ -86,6 +96,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    console.log('Final user ID for booking:', finalUserId);
 
     // Check for booking conflicts using proper date range overlap logic
     const { data: conflicts, error: conflictError } = await supabaseAdmin
@@ -111,35 +123,38 @@ export async function POST(request: NextRequest) {
     }
 
     // Create booking
+    const bookingData = {
+      user_id: finalUserId,
+      service_id: serviceId,
+      start_time: startTime,
+      end_time: endTime,
+      notes: notes || null,
+      status: 'pending',
+      total_amount: totalAmount,
+    };
+
+    console.log('Creating booking with data:', bookingData);
+
     const { data: booking, error } = await supabaseAdmin
       .from('bookings')
-      .insert([
-        {
-          user_id: finalUserId,
-          service_id: serviceId,
-          start_time: startTime,
-          end_time: endTime,
-          notes: notes || null,
-          status: 'pending',
-          total_amount: totalAmount,
-        }
-      ])
+      .insert([bookingData])
       .select()
       .single();
 
     if (error) {
       console.error('Error creating booking:', error);
       return NextResponse.json(
-        { error: 'Failed to create booking' },
+        { error: 'Failed to create booking', details: error.message },
         { status: 500 }
       );
     }
 
+    console.log('Booking created successfully:', booking);
     return NextResponse.json(booking);
   } catch (error) {
     console.error('Error in bookings POST:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
