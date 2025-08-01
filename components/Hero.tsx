@@ -16,7 +16,7 @@ export default function Hero() {
         <div className="mb-8 animate-slide-up opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
           <div className="w-48 h-48 mx-auto mb-6 relative">
             <Image
-              src="https://github.com/getcodestaff/familydogsitter/blob/main/logo.png?raw=true"
+              src="/logo.png"
               alt="Family Dog Sitter Logo"
               fill
               className="object-contain animate-logo-float"

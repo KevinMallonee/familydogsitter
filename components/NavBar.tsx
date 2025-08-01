@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
@@ -63,8 +64,15 @@ export default function NavBar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary-600 to-primary-800 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">🐕</span>
+            <div className="relative w-12 h-12">
+              <Image
+                src="/logo.png"
+                alt="Family Dog Sitter Logo"
+                width={48}
+                height={48}
+                className="rounded-lg"
+                priority
+              />
             </div>
             <span className="text-xl font-bold text-gray-900">Family Dog Sitter</span>
           </Link>
