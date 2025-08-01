@@ -113,10 +113,10 @@ function PaymentFormContent({
           </label>
           <div className="border-2 border-gray-300 rounded-xl p-4">
             <p className="text-sm text-gray-600 mb-2">
-              Test card: 4242 4242 4242 4242
+              Enter your credit card details
             </p>
             <p className="text-sm text-gray-600">
-              Any future date, any 3-digit CVC
+              Your payment will be processed securely through Stripe
             </p>
           </div>
         </div>
