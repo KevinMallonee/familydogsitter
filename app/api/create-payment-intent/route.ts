@@ -4,70 +4,62 @@ import { supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
-    const { bookingId, amount, isGuestBooking = false } = await request.json();
+    const { 
+      bookingId, 
+      amount, 
+      isGuestBooking = false,
+      guestInfo = null,
+      serviceId = 1
+    } = await request.json();
 
-    if (!bookingId || !amount) {
+    if (!amount) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Amount is required' },
         { status: 400 }
       );
     }
 
-    let booking;
+    console.log('Creating payment intent:', { bookingId, amount, isGuestBooking, guestInfo });
+
+    // Create user data based on booking type
     let user = null;
-
-    if (isGuestBooking) {
-      // Handle guest booking
-      const { data: guestBooking, error: guestBookingError } = await supabaseAdmin
-        .from('guest_bookings')
-        .select('*')
-        .eq('id', bookingId)
-        .single();
-
-      if (guestBookingError || !guestBooking) {
-        return NextResponse.json(
-          { error: 'Guest booking not found' },
-          { status: 404 }
-        );
-      }
-
-      booking = guestBooking;
-      
-      // Create a temporary user object for guest bookings
+    
+    if (isGuestBooking && guestInfo) {
+      // For guest bookings, use guest info
       user = {
-        id: `guest-${bookingId}`,
-        email: guestBooking.guest_email,
-        name: guestBooking.guest_name,
-        phone: guestBooking.guest_phone,
+        id: `guest-${Date.now()}`,
+        email: guestInfo.email,
+        name: guestInfo.name,
+        phone: guestInfo.phone,
         stripe_customer_id: null
       };
     } else {
-      // Handle regular booking
-      const { data: regularBooking, error: bookingError } = await supabaseAdmin
-        .from('bookings')
-        .select(`
-          *,
-          user:users(*)
-        `)
-        .eq('id', bookingId)
-        .single();
+      // For regular bookings, try to get user from database
+      if (bookingId) {
+        const { data: booking, error } = await supabaseAdmin
+          .from('bookings')
+          .select(`
+            *,
+            user:users(*)
+          `)
+          .eq('id', bookingId)
+          .single();
 
-      if (bookingError || !regularBooking) {
-        return NextResponse.json(
-          { error: 'Booking not found' },
-          { status: 404 }
-        );
+        if (!error && booking && booking.user) {
+          user = booking.user;
+        }
       }
+    }
 
-      booking = regularBooking;
-      user = booking.user;
-      
-      if (!user) {
-        return NextResponse.json(
-          { error: 'User not found' },
-          { status: 404 }
-        );
-      }
+    // If no user found, create a temporary one
+    if (!user) {
+      user = {
+        id: `temp-${Date.now()}`,
+        email: 'guest@example.com',
+        name: 'Guest User',
+        phone: null,
+        stripe_customer_id: null
+      };
     }
 
     let customerId = user.stripe_customer_id;
@@ -80,14 +72,6 @@ export async function POST(request: NextRequest) {
         phone: user.phone || undefined,
       });
 
-      // Update user with Stripe customer ID (only for regular users)
-      if (!isGuestBooking) {
-        await supabaseAdmin
-          .from('users')
-          .update({ stripe_customer_id: customer.id })
-          .eq('id', user.id);
-      }
-
       customerId = customer.id;
     }
 
@@ -97,16 +81,22 @@ export async function POST(request: NextRequest) {
       currency: 'usd',
       customer: customerId,
       metadata: {
-        bookingId,
+        bookingId: bookingId || `temp-${Date.now()}`,
         userId: user.id,
-        serviceId: booking.service_id,
+        serviceId: serviceId,
         isGuestBooking: isGuestBooking.toString(),
+        guestName: guestInfo?.name || '',
+        guestEmail: guestInfo?.email || '',
+        guestPhone: guestInfo?.phone || ''
       },
     });
+
+    console.log('Payment intent created successfully:', paymentIntent.id);
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
       amount: paymentIntent.amount,
+      paymentIntentId: paymentIntent.id
     });
   } catch (error) {
     console.error('Error creating payment intent:', error);

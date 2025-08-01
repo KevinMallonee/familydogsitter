@@ -12,11 +12,25 @@ interface PaymentFormProps {
   bookingId: string;
   amount: number;
   isGuestBooking?: boolean;
+  guestInfo?: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  serviceId?: number;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-function PaymentFormContent({ bookingId, amount, isGuestBooking = false, onSuccess, onCancel }: PaymentFormProps) {
+function PaymentFormContent({ 
+  bookingId, 
+  amount, 
+  isGuestBooking = false, 
+  guestInfo,
+  serviceId = 1,
+  onSuccess, 
+  onCancel 
+}: PaymentFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,6 +50,8 @@ function PaymentFormContent({ bookingId, amount, isGuestBooking = false, onSucce
           bookingId,
           amount,
           isGuestBooking,
+          guestInfo,
+          serviceId
         }),
       });
 
