@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { formatPrice } from '@/lib/utils';
 
 // Load Stripe outside of component to avoid recreating on every render
@@ -33,11 +33,19 @@ function PaymentFormContent({
 }: PaymentFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const stripe = useStripe();
+  const elements = useElements();
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     setIsProcessing(true);
     setError(null);
+
+    if (!stripe || !elements) {
+      setError('Stripe failed to load');
+      setIsProcessing(false);
+      return;
+    }
 
     try {
       // Create payment intent
@@ -63,15 +71,14 @@ function PaymentFormContent({
       const { clientSecret } = await response.json();
 
       // Confirm payment with Stripe
-      const stripe = await stripePromise;
-      if (!stripe) {
-        throw new Error('Stripe failed to load');
-      }
-
-      const { error: stripeError } = await stripe.confirmPayment({
-        clientSecret,
-        confirmParams: {
-          return_url: `${window.location.origin}/book/confirmation`,
+      const { error: stripeError } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement)!,
+          billing_details: {
+            name: guestInfo?.name || 'Guest User',
+            email: guestInfo?.email || 'guest@example.com',
+            phone: guestInfo?.phone || undefined,
+          },
         },
       });
 
@@ -112,12 +119,22 @@ function PaymentFormContent({
             Card Information
           </label>
           <div className="border-2 border-gray-300 rounded-xl p-4">
-            <p className="text-sm text-gray-600 mb-2">
-              Enter your credit card details
-            </p>
-            <p className="text-sm text-gray-600">
-              Your payment will be processed securely through Stripe
-            </p>
+            <CardElement
+              options={{
+                style: {
+                  base: {
+                    fontSize: '16px',
+                    color: '#424770',
+                    '::placeholder': {
+                      color: '#aab7c4',
+                    },
+                  },
+                  invalid: {
+                    color: '#9e2146',
+                  },
+                },
+              }}
+            />
           </div>
         </div>
 
@@ -137,7 +154,7 @@ function PaymentFormContent({
           </button>
           <button
             type="submit"
-            disabled={isProcessing}
+            disabled={isProcessing || !stripe}
             className="flex-1 px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             {isProcessing ? 'Processing...' : 'Pay Now'}
