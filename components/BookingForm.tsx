@@ -11,6 +11,20 @@ interface BookingFormProps {
   user: any;
 }
 
+interface BookingData {
+  serviceId: string;
+  startTime: string;
+  endTime: string;
+  notes: string;
+  userId: any;
+  totalAmount: number;
+  guestInfo?: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+}
+
 export default function BookingForm({ services, user }: BookingFormProps) {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [startTime, setStartTime] = useState('');
@@ -58,27 +72,32 @@ export default function BookingForm({ services, user }: BookingFormProps) {
     setIsSubmitting(true);
 
     try {
-      // Combine notes with guest information if guest booking
-      let finalNotes = notes;
+      // Prepare booking data
+      const bookingData: BookingData = {
+        serviceId: selectedService.id,
+        startTime,
+        endTime,
+        notes,
+        userId: user.id,
+        totalAmount: calculateTotal(),
+      };
+
+      // Add guest information if it's a guest booking
       if (isGuest && guestName && guestEmail && guestPhone) {
-        const guestInfo = `\n\n--- Guest Information ---\nName: ${guestName}\nEmail: ${guestEmail}\nPhone: ${guestPhone}`;
-        finalNotes = (notes || '') + guestInfo;
+        bookingData.guestInfo = {
+          name: guestName,
+          email: guestEmail,
+          phone: guestPhone,
+        };
       }
 
-      // Create booking using the anonymous user's ID
+      // Create booking
       const response = await fetch('/api/bookings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          serviceId: selectedService.id,
-          startTime,
-          endTime,
-          notes: finalNotes,
-          userId: user.id,
-          totalAmount: calculateTotal(),
-        }),
+        body: JSON.stringify(bookingData),
       });
 
       if (response.ok) {

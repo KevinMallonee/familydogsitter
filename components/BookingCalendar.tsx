@@ -1,18 +1,46 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { Booking } from '@/types';
+import { supabase } from '@/lib/supabase';
 
 interface BookingCalendarProps {
-  bookings: Booking[];
+  bookings?: Booking[];
 }
 
-export default function BookingCalendar({ bookings }: BookingCalendarProps) {
+export default function BookingCalendar({ bookings: propBookings }: BookingCalendarProps) {
   const calendarRef = useRef<FullCalendar>(null);
+  const [bookings, setBookings] = useState<Booking[]>(propBookings || []);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      if (!propBookings) {
+        try {
+          const { data, error } = await supabase
+            .from('bookings')
+            .select(`
+              *,
+              service:services(*)
+            `)
+            .neq('status', 'cancelled');
+
+          if (error) {
+            console.error('Error fetching bookings:', error);
+          } else {
+            setBookings(data || []);
+          }
+        } catch (error) {
+          console.error('Error fetching bookings:', error);
+        }
+      }
+    };
+
+    fetchBookings();
+  }, [propBookings]);
 
   const events = bookings.map(booking => ({
     id: booking.id,
