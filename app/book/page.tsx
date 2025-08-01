@@ -45,19 +45,25 @@ export default function BookPage() {
           setUser(user);
           setIsAuthenticated(true);
         } else {
-          // Create anonymous user for guest bookings
-          const { data: { user: anonymousUser }, error } = await supabase.auth.signInAnonymously();
-          if (error) {
-            console.error('Error creating anonymous user:', error);
-            setError('Failed to create guest session');
-          } else if (anonymousUser) {
-            setUser(anonymousUser);
-            setIsAuthenticated(false);
-          }
+          // Create a simple guest user object instead of trying anonymous auth
+          const guestUser = {
+            id: `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            email: null,
+            isGuest: true
+          };
+          setUser(guestUser);
+          setIsAuthenticated(false);
         }
       } catch (error) {
         console.error('Error checking auth:', error);
-        setError('Authentication error');
+        // Create a simple guest user object as fallback
+        const guestUser = {
+          id: `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          email: null,
+          isGuest: true
+        };
+        setUser(guestUser);
+        setIsAuthenticated(false);
       } finally {
         setLoading(false);
       }
