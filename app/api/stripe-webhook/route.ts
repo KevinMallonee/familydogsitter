@@ -27,29 +27,84 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const paymentIntent = event.data.object as Stripe.PaymentIntent;
+    
     switch (event.type) {
+      case 'payment_intent.created':
+        console.log('Payment intent created:', paymentIntent.id);
+        // Payment intent was created but not yet confirmed
+        break;
+
+      case 'payment_intent.processing':
+        console.log('Payment intent processing:', paymentIntent.id);
+        // Payment is being processed (e.g., bank transfer)
+        await supabaseAdmin
+          .from('payments')
+          .update({ status: 'pending' })
+          .eq('stripe_payment_intent_id', paymentIntent.id);
+        break;
+
+      case 'payment_intent.requires_action':
+        console.log('Payment intent requires action:', paymentIntent.id);
+        // Payment requires additional authentication (3D Secure, etc.)
+        await supabaseAdmin
+          .from('payments')
+          .update({ status: 'pending' })
+          .eq('stripe_payment_intent_id', paymentIntent.id);
+        break;
+
       case 'payment_intent.succeeded':
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        
-        // Update payment status in database
+        console.log('Payment intent succeeded:', paymentIntent.id);
+        // Payment was successful
         await supabaseAdmin
           .from('payments')
           .update({ status: 'succeeded' })
           .eq('stripe_payment_intent_id', paymentIntent.id);
+        
+        // Also update booking status to confirmed
+        await supabaseAdmin
+          .from('bookings')
+          .update({ status: 'confirmed' })
+          .eq('id', paymentIntent.metadata.bookingId);
+        break;
 
-        console.log('Payment succeeded:', paymentIntent.id);
+      case 'payment_intent.partially_funded':
+        console.log('Payment intent partially funded:', paymentIntent.id);
+        // Payment was partially funded (e.g., partial bank transfer)
+        await supabaseAdmin
+          .from('payments')
+          .update({ status: 'pending' })
+          .eq('stripe_payment_intent_id', paymentIntent.id);
         break;
 
       case 'payment_intent.payment_failed':
-        const failedPayment = event.data.object as Stripe.PaymentIntent;
-        
-        // Update payment status in database
+        console.log('Payment intent failed:', paymentIntent.id);
+        // Payment failed
         await supabaseAdmin
           .from('payments')
           .update({ status: 'failed' })
-          .eq('stripe_payment_intent_id', failedPayment.id);
+          .eq('stripe_payment_intent_id', paymentIntent.id);
+        
+        // Also update booking status to pending (allow retry)
+        await supabaseAdmin
+          .from('bookings')
+          .update({ status: 'pending' })
+          .eq('id', paymentIntent.metadata.bookingId);
+        break;
 
-        console.log('Payment failed:', failedPayment.id);
+      case 'payment_intent.canceled':
+        console.log('Payment intent canceled:', paymentIntent.id);
+        // Payment was canceled
+        await supabaseAdmin
+          .from('payments')
+          .update({ status: 'cancelled' })
+          .eq('stripe_payment_intent_id', paymentIntent.id);
+        
+        // Also update booking status to cancelled
+        await supabaseAdmin
+          .from('bookings')
+          .update({ status: 'cancelled' })
+          .eq('id', paymentIntent.metadata.bookingId);
         break;
 
       default:

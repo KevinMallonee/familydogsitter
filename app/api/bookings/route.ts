@@ -46,58 +46,12 @@ export async function POST(request: NextRequest) {
 
     console.log('Booking request:', { serviceId, startTime, endTime, totalAmount, guestInfo });
 
-    if (!serviceId || !startTime || !endTime || !totalAmount) {
+    if (!serviceId || !startTime || !endTime || !totalAmount || !userId) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
-
-    let finalUserId = userId;
-
-    // If this is a guest booking, create a guest user record
-    if (guestInfo && guestInfo.name && guestInfo.email) {
-      console.log('Creating guest user:', guestInfo);
-      
-      const guestUserData = {
-        email: guestInfo.email,
-        name: guestInfo.name,
-        phone: guestInfo.phone || null,
-        is_guest: true,
-      };
-
-      console.log('Guest user data to insert:', guestUserData);
-
-      const { data: guestUser, error: guestError } = await supabaseAdmin
-        .from('users')
-        .insert([guestUserData])
-        .select()
-        .single();
-
-      if (guestError) {
-        console.error('Error creating guest user:', guestError);
-        console.error('Guest user data that failed:', guestUserData);
-        return NextResponse.json(
-          { 
-            error: 'Failed to create guest user', 
-            details: guestError.message,
-            code: guestError.code,
-            hint: guestError.hint
-          },
-          { status: 500 }
-        );
-      }
-
-      console.log('Guest user created successfully:', guestUser);
-      finalUserId = guestUser.id;
-    } else if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID or guest information is required' },
-        { status: 400 }
-      );
-    }
-
-    console.log('Final user ID for booking:', finalUserId);
 
     // Check for booking conflicts using proper date range overlap logic
     const { data: conflicts, error: conflictError } = await supabaseAdmin
@@ -124,7 +78,7 @@ export async function POST(request: NextRequest) {
 
     // Create booking
     const bookingData = {
-      user_id: finalUserId,
+      user_id: userId,
       service_id: serviceId,
       start_time: startTime,
       end_time: endTime,

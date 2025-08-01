@@ -24,7 +24,7 @@ export default function BookingForm({ services, user }: BookingFormProps) {
   const [bookingId, setBookingId] = useState<string | null>(null);
   const router = useRouter();
 
-  const isGuest = !user.email;
+  const isGuest = user && !user.email;
 
   const handleServiceSelect = (service: Service) => {
     setSelectedService(service);
@@ -58,6 +58,13 @@ export default function BookingForm({ services, user }: BookingFormProps) {
     setIsSubmitting(true);
 
     try {
+      // Combine notes with guest information if guest booking
+      let finalNotes = notes;
+      if (isGuest && guestName && guestEmail && guestPhone) {
+        const guestInfo = `\n\n--- Guest Information ---\nName: ${guestName}\nEmail: ${guestEmail}\nPhone: ${guestPhone}`;
+        finalNotes = (notes || '') + guestInfo;
+      }
+
       // Create booking
       const response = await fetch('/api/bookings', {
         method: 'POST',
@@ -68,14 +75,9 @@ export default function BookingForm({ services, user }: BookingFormProps) {
           serviceId: selectedService.id,
           startTime,
           endTime,
-          notes,
+          notes: finalNotes,
           userId: user.id,
           totalAmount: calculateTotal(),
-          guestInfo: isGuest ? {
-            name: guestName,
-            email: guestEmail,
-            phone: guestPhone
-          } : null,
         }),
       });
 

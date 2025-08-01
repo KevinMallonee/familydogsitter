@@ -20,12 +20,13 @@ export default function BookPage() {
       if (user) {
         setUser(user);
       } else {
-        // Create a guest user object for guest bookings
-        setUser({
-          id: `guest_${Date.now()}`,
-          email: null,
-          user_metadata: { name: 'Guest User' }
-        });
+        // Create anonymous user for guest bookings
+        const { data: { user: anonymousUser }, error } = await supabase.auth.signInAnonymously();
+        if (error) {
+          console.error('Error creating anonymous user:', error);
+        } else {
+          setUser(anonymousUser);
+        }
       }
     };
 
@@ -74,7 +75,7 @@ export default function BookPage() {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Choose your preferred service and schedule your dog's care
           </p>
-          {!user.email && (
+          {user && !user.email && (
             <div className="mt-4 p-4 bg-blue-50 rounded-xl max-w-2xl mx-auto">
               <p className="text-blue-800">
                 💡 <strong>Guest Booking:</strong> You can book without creating an account. 
