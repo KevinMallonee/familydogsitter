@@ -42,9 +42,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { serviceId, startTime, endTime, notes, userId, totalAmount, guestInfo } = await request.json();
+    const { serviceId, startTime, endTime, notes, userId, totalAmount } = await request.json();
 
-    console.log('Booking request:', { serviceId, startTime, endTime, totalAmount, guestInfo });
+    console.log('Booking request:', { serviceId, startTime, endTime, totalAmount, userId });
 
     if (!serviceId || !startTime || !endTime || !totalAmount || !userId) {
       return NextResponse.json(

@@ -65,7 +65,7 @@ export default function BookingForm({ services, user }: BookingFormProps) {
         finalNotes = (notes || '') + guestInfo;
       }
 
-      // Create booking
+      // Create booking using the anonymous user's ID
       const response = await fetch('/api/bookings', {
         method: 'POST',
         headers: {
