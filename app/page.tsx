@@ -10,12 +10,11 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       <Hero />
-      <Services />
+      <ContactForm />
       <About />
       <Pricing />
       <Reviews />
       <ServiceAreas />
-      <ContactForm />
     </div>
   );
 } 
