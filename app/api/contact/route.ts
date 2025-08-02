@@ -21,57 +21,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let dogPictureUrl = null;
+    // For now, combine all the new information into the message field
+    // until the database is updated
+    const enhancedMessage = `
+Name: ${name}
+Email: ${email}
+Phone: ${phone}
+Start Date: ${startDate}
+End Date: ${endDate}
+Dog Picture: ${dogPicture ? dogPicture.name : 'None provided'}
 
-    // Handle dog picture upload if provided
-    if (dogPicture) {
-      try {
-        // Convert file to buffer
-        const bytes = await dogPicture.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        
-        // Generate unique filename
-        const fileExt = dogPicture.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        
-        // Upload to Supabase Storage
-        const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
-          .from('dog-pictures')
-          .upload(fileName, buffer, {
-            contentType: dogPicture.type,
-            cacheControl: '3600',
-            upsert: false
-          });
+Message:
+${message || 'No additional message provided'}
+    `.trim();
 
-        if (uploadError) {
-          console.error('Error uploading dog picture:', uploadError);
-          // Continue without the picture if upload fails
-        } else {
-          // Get public URL
-          const { data: urlData } = supabaseAdmin.storage
-            .from('dog-pictures')
-            .getPublicUrl(fileName);
-          
-          dogPictureUrl = urlData.publicUrl;
-        }
-      } catch (error) {
-        console.error('Error processing dog picture:', error);
-        // Continue without the picture if processing fails
-      }
-    }
-
-    // Insert into inquiries table
+    // Insert into inquiries table with existing structure
     const { error } = await supabaseAdmin
       .from('inquiries')
       .insert([
         {
           name,
           email,
-          phone,
-          start_date: startDate,
-          end_date: endDate,
-          message: message || null,
-          dog_picture_url: dogPictureUrl,
+          message: enhancedMessage,
         }
       ]);
 
@@ -92,7 +63,7 @@ export async function POST(request: NextRequest) {
       startDate, 
       endDate, 
       message,
-      dogPictureUrl 
+      dogPicture: dogPicture ? dogPicture.name : 'None'
     });
 
     return NextResponse.json(
