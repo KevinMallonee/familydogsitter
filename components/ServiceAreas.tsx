@@ -75,33 +75,6 @@ export default function ServiceAreas() {
             </div>
           ))}
         </div>
-
-        {/* Additional Info */}
-        <div className="mt-12 text-center">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 md:p-8 max-w-4xl mx-auto shadow-lg">
-            <div className="flex items-center justify-center mb-4">
-              <div className="text-3xl mr-3">🚗</div>
-              <h3 className="text-2xl font-bold text-gray-900">Convenient Travel</h3>
-            </div>
-            <p className="text-lg text-gray-700 mb-4">
-              We travel to your home for all services, making it convenient for you and comfortable for your dogs.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-600">
-              <div className="flex items-center">
-                <span className="text-green-500 mr-2">✓</span>
-                No travel fees within service area
-              </div>
-              <div className="flex items-center">
-                <span className="text-green-500 mr-2">✓</span>
-                Flexible scheduling
-              </div>
-              <div className="flex items-center">
-                <span className="text-green-500 mr-2">✓</span>
-                Same-day availability
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );

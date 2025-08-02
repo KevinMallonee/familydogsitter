@@ -64,12 +64,6 @@ export default function Hero() {
           </a>
         </div>
       </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce-arrow">
-        <div className="text-3xl mb-2">⬇</div>
-        <div className="text-sm">Learn More</div>
-      </div>
     </section>
   );
 } 
