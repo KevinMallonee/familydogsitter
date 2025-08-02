@@ -142,21 +142,33 @@ export interface Database {
           id: string
           name: string
           email: string
+          phone: string
+          start_date: string
+          end_date: string
           message: string | null
+          dog_picture_url: string | null
           created_at: string
         }
         Insert: {
           id?: string
           name: string
           email: string
+          phone: string
+          start_date: string
+          end_date: string
           message?: string | null
+          dog_picture_url?: string | null
           created_at?: string
         }
         Update: {
           id?: string
           name?: string
           email?: string
+          phone?: string
+          start_date?: string
+          end_date?: string
           message?: string | null
+          dog_picture_url?: string | null
           created_at?: string
         }
       }

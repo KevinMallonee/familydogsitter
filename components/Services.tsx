@@ -49,11 +49,19 @@ export default function Services() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Our Dog Care Services
+            Schedule Your Dog Care
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Personalized care that keeps your dogs happy and healthy while you're away
+            Professional, personalized care for your beloved dogs
           </p>
+          <div className="mt-6">
+            <a 
+              href="tel:(916) 805-1250" 
+              className="inline-flex items-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-full hover:bg-primary-700 transition-colors text-lg"
+            >
+              📞 (916) 805-1250
+            </a>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">

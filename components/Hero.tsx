@@ -57,10 +57,10 @@ export default function Hero() {
             Book Dog Sitting
           </Link>
           <a
-            href="tel:916-805-1250"
+            href="sms:916-805-1250"
             className="bg-gradient-to-r from-accent-600 to-accent-700 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
           >
-            📞 (916) 805-1250
+            💬 Text Us
           </a>
         </div>
       </div>

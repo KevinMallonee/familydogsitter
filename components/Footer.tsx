@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
@@ -10,8 +11,14 @@ export default function Footer() {
           {/* Company Info */}
           <div>
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">🐕</span>
+              <div className="relative w-10 h-10">
+                <Image
+                  src="/logo-transparent.png"
+                  alt="Family Dog Sitter Logo"
+                  width={40}
+                  height={40}
+                  className="rounded-lg"
+                />
               </div>
               <span className="text-xl font-bold">Family Dog Sitter</span>
             </div>
