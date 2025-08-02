@@ -70,11 +70,8 @@ export default function ContactForm() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Schedule Your Dog Care
+            Meet and Greet
           </h2>
-          <div className="text-3xl font-bold text-accent-600 mb-4">
-            (916) 805-1250
-          </div>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Ready to give your dogs the loving care they deserve? Get in touch today!
           </p>
