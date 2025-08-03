@@ -35,14 +35,18 @@ Message:
 ${message || 'No additional message provided'}
     `.trim();
 
-    // Insert into inquiries table with existing structure
+    // Insert into inquiries table with all required fields
     const { error } = await supabaseAdmin
       .from('inquiries')
       .insert([
         {
           name,
           email,
+          phone,
+          start_date: startDate,
+          end_date: endDate,
           message: enhancedMessage,
+          dog_picture_url: dogPicture ? dogPicture.name : null,
         }
       ]);
 
