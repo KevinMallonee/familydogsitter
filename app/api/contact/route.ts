@@ -21,6 +21,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Upload dog picture to Supabase storage if provided
+    let dogPictureUrl = null;
+    if (dogPicture) {
+      const fileName = `${Date.now()}-${dogPicture.name}`;
+      const { error: uploadError } = await supabaseAdmin.storage
+        .from('dogs')
+        .upload(fileName, dogPicture);
+      
+      if (uploadError) {
+        console.error('Error uploading dog picture:', uploadError);
+        return NextResponse.json(
+          { error: 'Failed to upload dog picture' },
+          { status: 500 }
+        );
+      }
+      
+      // Get public URL for the uploaded image
+      const { data: { publicUrl } } = supabaseAdmin.storage
+        .from('dogs')
+        .getPublicUrl(fileName);
+      
+      dogPictureUrl = publicUrl;
+    }
+
     // For now, combine all the new information into the message field
     // until the database is updated
     const enhancedMessage = `
@@ -29,7 +53,7 @@ Email: ${email}
 Phone: ${phone}
 Start Date: ${startDate}
 End Date: ${endDate}
-Dog Picture: ${dogPicture ? dogPicture.name : 'None provided'}
+Dog Picture: ${dogPictureUrl || 'None provided'}
 
 Message:
 ${message || 'No additional message provided'}
@@ -46,7 +70,7 @@ ${message || 'No additional message provided'}
           start_date: startDate,
           end_date: endDate,
           message: enhancedMessage,
-          dog_picture_url: dogPicture ? dogPicture.name : null,
+          dog_picture_url: dogPictureUrl,
         }
       ]);
 
